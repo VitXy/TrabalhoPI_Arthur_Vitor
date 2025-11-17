@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro - AntiProcrastinator</title>
+</head>
+<body>
+    <h2>Cadastro</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <label>Usuário:</label><br>
+        <input type="text" name="username"><br>
+        <label>Email:</label><br>
+        <input type="email" name="email"><br>
+        <label>Senha:</label><br>
+        <input type="password" name="password1"><br>
+        <label>Confirmar Senha:</label><br>
+        <input type="password" name="password2"><br>
+        <button type="submit">Cadastrar</button>
+    </form>
+    <p>Já tem conta? <a href="{% url 'login' %}">Fazer login</a></p>
+</body>
+</html>

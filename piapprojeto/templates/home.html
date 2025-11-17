@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Anti-Procrastinator - Tarefas</title>
+</head>
+<body>
+    <h1>Bem-vindo, {{ user.username }}!</h1>
+
+    <p><strong>XP:</strong> {{ perfil.xp }}</p>
+    <p><strong>Dias consecutivos:</strong> {{ perfil.dias_consecutivos }}</p>
+
+    <hr>
+
+    <h3>Adicionar nova tarefa</h3>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="titulo" placeholder="Título" required>
+        <input type="text" name="descricao" placeholder="Descrição (opcional)">
+        <button type="submit" name="add">Adicionar</button>
+    </form>
+
+    <hr>
+
+    <h3>Suas tarefas</h3>
+    <ul>
+        {% for tarefa in tarefas %}
+            <li>
+                {% if tarefa.concluida %}
+                    ✔ <del>{{ tarefa.titulo }}</del>
+                {% else %}
+                    {{ tarefa.titulo }}
+                    <form method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
+                        <button type="submit" name="done">Concluir</button>
+                    </form>
+                {% endif %}
+
+                <form method="POST" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
+                    <button type="submit" name="delete">Excluir</button>
+                </form>
+            </li>
+        {% empty %}
+            <p>Nenhuma tarefa criada ainda.</p>
+        {% endfor %}
+    </ul>
+
+    <p><a href="/logout/">Sair</a></p>
+
+</body>
+</html>
