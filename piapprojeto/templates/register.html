@@ -1,23 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro - AntiProcrastinator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar — Sistema</title>
+
+    <style>
+        body {
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a0933, #2b0f4a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Poppins", sans-serif;
+            color: white;
+        }
+
+        .card {
+            width: 390px;
+            padding: 35px;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        .card h2 {
+            margin-bottom: 25px;
+            color: #e5d7ff;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 18px 0;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #7f46ff;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #9d63ff;
+            transform: scale(1.02);
+        }
+
+        a {
+            color: #d8c0ff;
+            text-decoration: none;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.25);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+    </style>
 </head>
+
 <body>
-    <h2>Cadastro</h2>
-    <form method="POST">
-        {% csrf_token %}
-        <label>Usuário:</label><br>
-        <input type="text" name="username"><br>
-        <label>Email:</label><br>
-        <input type="email" name="email"><br>
-        <label>Senha:</label><br>
-        <input type="password" name="password1"><br>
-        <label>Confirmar Senha:</label><br>
-        <input type="password" name="password2"><br>
-        <button type="submit">Cadastrar</button>
-    </form>
-    <p>Já tem conta? <a href="{% url 'login' %}">Fazer login</a></p>
+    
+    <div class="card">
+        <h2>Crie sua conta</h2>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <input type="text" name="username" placeholder="Usuário" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password1" placeholder="Senha" required>
+            <input type="password" name="password2" placeholder="Confirmar senha" required>
+
+            <button type="submit">Registrar</button>
+        </form>
+
+        <p style="margin-top:15px;">
+            Já tem conta? <a href="/login/">Entrar</a>
+        </p>
+    </div>
+
 </body>
 </html>

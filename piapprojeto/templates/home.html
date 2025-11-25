@@ -1,54 +1,131 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Anti-Procrastinator - Tarefas</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema — Home</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #17092b, #2d0f53);
+            font-family: "Poppins", sans-serif;
+            color: white;
+        }
+
+        header {
+            padding: 18px 35px;
+            background: rgba(0,0,0,0.25);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h2 {
+            margin: 0;
+            color: #cbb2ff;
+        }
+
+        .logout {
+            color: #ff9ebd;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .container {
+            width: 85%;
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.07);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 0 18px rgba(0,0,0,0.35);
+            margin-bottom: 25px;
+        }
+
+        .task {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        button {
+            background: #7f46ff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #a270ff;
+        }
+
+        input, textarea {
+            width: 100%;
+            border: none;
+            outline: none;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.15);
+            margin-bottom: 15px;
+            color: white;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Bem-vindo, {{ user.username }}!</h1>
 
-    <p><strong>XP:</strong> {{ perfil.xp }}</p>
-    <p><strong>Dias consecutivos:</strong> {{ perfil.dias_consecutivos }}</p>
+<header>
+    <h2>Bem-vindo, {{ request.user.username }}</h2>
+    <a href="/logout/" class="logout">Sair</a>
+</header>
 
-    <hr>
+<div class="container">
 
-    <h3>Adicionar nova tarefa</h3>
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="titulo" placeholder="Título" required>
-        <input type="text" name="descricao" placeholder="Descrição (opcional)">
-        <button type="submit" name="add">Adicionar</button>
-    </form>
+    <div class="card">
+        <h3>Adicionar Tarefa</h3>
 
-    <hr>
+        <form method="POST">
+            {% csrf_token %}
 
-    <h3>Suas tarefas</h3>
-    <ul>
+            <input type="text" name="titulo" placeholder="Título da tarefa" required>
+            <textarea name="descricao" placeholder="Descrição"></textarea>
+
+            <button type="submit" name="add">Adicionar</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Suas Tarefas</h3>
+
         {% for tarefa in tarefas %}
-            <li>
-                {% if tarefa.concluida %}
-                    ✔ <del>{{ tarefa.titulo }}</del>
-                {% else %}
-                    {{ tarefa.titulo }}
-                    <form method="POST" style="display:inline;">
-                        {% csrf_token %}
-                        <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
-                        <button type="submit" name="done">Concluir</button>
-                    </form>
-                {% endif %}
+            <div class="task">
+                <strong>{{ tarefa.titulo }}</strong><br>
+                <small>{{ tarefa.descricao }}</small>
 
-                <form method="POST" style="display:inline;">
+                <form method="POST" style="margin-top:10px;">
                     {% csrf_token %}
                     <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
-                    <button type="submit" name="delete">Excluir</button>
-                </form>
-            </li>
-        {% empty %}
-            <p>Nenhuma tarefa criada ainda.</p>
-        {% endfor %}
-    </ul>
 
-   <a href="{% url 'logout' %}" class="logout-btn">Sair</a>
+                    <button name="done">Concluir</button>
+                    <button name="delete" style="background:#ff5680;">Excluir</button>
+                </form>
+            </div>
+        {% empty %}
+            <p>Nenhuma tarefa encontrada.</p>
+        {% endfor %}
+    </div>
+
+</div>
 
 </body>
 </html>

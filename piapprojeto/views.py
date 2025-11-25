@@ -35,12 +35,13 @@ def register_view(request):
         
         if User.objects.filter(username=username).exists():
             return render(request, 'register.html', {'error': 'Usuário já existe.'})
-        
+
         user = User.objects.create_user(username=username, email=email, password=password1)
         user.save()
-        return redirect('login')
-    
-    return render(request, "register.html")
+
+        return redirect('login')   # <----- ESTA LINHA FUNCIONA
+    else:
+        return render(request, 'register.html')
 
 
 @login_required
