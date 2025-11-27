@@ -1,131 +1,115 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema — Home</title>
-
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #17092b, #2d0f53);
-            font-family: "Poppins", sans-serif;
-            color: white;
-        }
-
-        header {
-            padding: 18px 35px;
-            background: rgba(0,0,0,0.25);
-            backdrop-filter: blur(10px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        header h2 {
-            margin: 0;
-            color: #cbb2ff;
-        }
-
-        .logout {
-            color: #ff9ebd;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .container {
-            width: 85%;
-            max-width: 1200px;
-            margin: 30px auto;
-        }
-
-        .card {
-            background: rgba(255,255,255,0.07);
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 0 18px rgba(0,0,0,0.35);
-            margin-bottom: 25px;
-        }
-
-        .task {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-
-        button {
-            background: #7f46ff;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 10px;
-            color: white;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        button:hover {
-            background: #a270ff;
-        }
-
-        input, textarea {
-            width: 100%;
-            border: none;
-            outline: none;
-            padding: 10px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.15);
-            margin-bottom: 15px;
-            color: white;
-        }
-    </style>
+    <title>Anti-Procrastinator — Painel</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
 <body>
 
 <header>
-    <h2>Bem-vindo, {{ request.user.username }}</h2>
-    <a href="/logout/" class="logout">Sair</a>
+    <h2>Olá, {{ request.user.username }}</h2>
+
+    <div class="xp-box glass">
+        <strong>Level {{ level }}</strong> — {{ xp }} XP
+        <div class="bar"><div id="barFill" class="bar-fill"></div></div>
+        <p class="xp-info">Faltam <span id="xpToNext">{{ xp_to_next }}</span> XP para o próximo nível</p>
+    </div>
+
+    <a class="logout" href="{% url 'logout' %}">Sair</a>
 </header>
 
 <div class="container">
 
-    <div class="card">
+    <!-- Form de adicionar tarefa -->
+    <div class="card glass">
         <h3>Adicionar Tarefa</h3>
 
         <form method="POST">
             {% csrf_token %}
 
             <input type="text" name="titulo" placeholder="Título da tarefa" required>
-            <textarea name="descricao" placeholder="Descrição"></textarea>
 
-            <button type="submit" name="add">Adicionar</button>
+            <textarea name="descricao" rows="2" placeholder="Descrição (opcional)"></textarea>
+
+            <select name="dificuldade">
+                <option value="F">Fácil — 10 XP</option>
+                <option value="M" selected>Média — 20 XP</option>
+                <option value="D">Difícil — 40 XP</option>
+            </select>
+
+            <button class="btn primary-btn" name="add" type="submit">Adicionar</button>
         </form>
     </div>
 
-    <div class="card">
-        <h3>Suas Tarefas</h3>
+    <!-- Abas de navegação -->
+    <div class="tabs">
+        <a class="tab {% if tab == 'ativas' %}active{% endif %}" href="?tab=ativas">Ativas</a>
+        <a class="tab {% if tab == 'concluidas' %}active{% endif %}" href="?tab=concluidas">Concluídas</a>
+        <a class="tab {% if tab == 'lixeira' %}active{% endif %}" href="?tab=lixeira">Lixeira</a>
+    </div>
 
-        {% for tarefa in tarefas %}
+    <!-- Lista de Tarefas -->
+    <div class="card glass">
+
+        {% if tarefas %}
+            {% for tarefa in tarefas %}
+            
             <div class="task">
-                <strong>{{ tarefa.titulo }}</strong><br>
-                <small>{{ tarefa.descricao }}</small>
 
-                <form method="POST" style="margin-top:10px;">
-                    {% csrf_token %}
-                    <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
+                <div>
+                    <h3 class="task-title">{{ tarefa.titulo }}</h3>
+                    <p class="task-desc">{{ tarefa.descricao }}</p>
+                    <span class="difficulty {{ tarefa.dificuldade }}">{{ tarefa.get_dificuldade_display }}</span>
+                </div>
 
-                    <button name="done">Concluir</button>
-                    <button name="delete" style="background:#ff5680;">Excluir</button>
-                </form>
+                <div class="task-buttons">
+
+                    {% if not tarefa.concluida and not tarefa.is_deleted %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
+                        <button class="btn primary-btn" name="done">Concluir</button>
+                    </form>
+                    {% endif %}
+
+                    {% if tab == 'lixeira' %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
+                        <button class="btn restore-btn" name="restore">Restaurar</button>
+                    </form>
+                    {% else %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
+                        <button class="btn delete-btn" name="delete">Excluir</button>
+                    </form>
+                    {% endif %}
+
+                </div>
+
             </div>
-        {% empty %}
-            <p>Nenhuma tarefa encontrada.</p>
-        {% endfor %}
+
+            {% endfor %}
+        {% else %}
+            <p>Nenhuma tarefa aqui.</p>
+        {% endif %}
+
     </div>
 
 </div>
+
+<script>
+    // ANIMAÇÃO DA BARRA DE XP
+    const xp = {{ xp }};
+    const needed = {{ xp_needed_for_level }};
+    const percent = Math.min(100, Math.round((xp / needed) * 100));
+    document.getElementById("barFill").style.width = percent + "%";
+</script>
 
 </body>
 </html>

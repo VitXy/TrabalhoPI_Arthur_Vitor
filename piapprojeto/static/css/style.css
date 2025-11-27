@@ -1,0 +1,342 @@
+/* ----------------------------- */
+/*     SISTEMA DE TEMAS         */
+/* ----------------------------- */
+
+:root {
+    --bg-main: #17092b;
+    --bg-secondary: #2d0f53;
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --text: #ffffff;
+    --text-muted: #cfcfcf;
+
+    --primary: #7f46ff;
+    --primary-light: #a270ff;
+    --primary-dark: #5b27d8;
+
+    --danger: #ff5666;
+    --restore: #51ffa3;
+
+    --card-bg: rgba(255, 255, 255, 0.07);
+    --input-bg: rgba(255, 255, 255, 0.15);
+
+    --bar-bg: rgba(255, 255, 255, 0.12);
+
+    --shadow: 0 0 25px rgba(0,0,0,0.3);
+}
+
+/* ----------------------------- */
+/*  TEMA CLARO AUTOMÁTICO        */
+/* ----------------------------- */
+
+.light-mode {
+    --bg-main: #f4f4fb;
+    --bg-secondary: #ffffff;
+
+    --glass-bg: rgba(0, 0, 0, 0.08);
+    --glass-border: rgba(0, 0, 0, 0.15);
+
+    --text: #1c1c1c;
+    --text-muted: #555;
+
+    --primary: #7f46ff;
+    --primary-light: #a270ff;
+
+    --card-bg: rgba(0,0,0,0.06);
+    --input-bg: rgba(255, 255, 255, 0.6);
+
+    --bar-bg: rgba(0, 0, 0, 0.12);
+
+    --shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* ----------------------------- */
+/*       RESET & BASE UI         */
+/* ----------------------------- */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, var(--bg-main), var(--bg-secondary));
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ----------------------------- */
+/*         AUTH PAGES            */
+/* ----------------------------- */
+
+.auth-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 420px;
+}
+
+.auth-box {
+    padding: 40px;
+    border-radius: 18px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow);
+}
+
+.auth-title {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.auth-subtitle {
+    opacity: 0.8;
+    margin-bottom: 25px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 18px;
+}
+
+.input-group label {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.input-group input {
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: var(--input-bg);
+    color: var(--text);
+    outline: none;
+}
+
+.switch-auth {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.switch-auth a {
+    color: var(--primary-light);
+}
+
+/* ----------------------------- */
+/*         BUTTONS               */
+/* ----------------------------- */
+
+.btn {
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+    color: white;
+    font-weight: 500;
+}
+
+.primary-btn {
+    background: var(--primary);
+}
+
+.primary-btn:hover {
+    background: var(--primary-light);
+}
+
+.delete-btn {
+    background: var(--danger);
+}
+
+.restore-btn {
+    background: var(--restore);
+    color: black;
+}
+
+/* ----------------------------- */
+/*        HEADER / NAV           */
+/* ----------------------------- */
+
+header {
+    padding: 18px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+}
+
+.logout {
+    color: var(--danger);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* ----------------------------- */
+/*          XP PANEL             */
+/* ----------------------------- */
+
+.xp-box {
+    background: var(--glass-bg);
+    padding: 12px 18px;
+    border-radius: 14px;
+    border: 1px solid var(--glass-border);
+}
+
+.bar {
+    width: 100%;
+    height: 10px;
+    border-radius: 10px;
+    background: var(--bar-bg);
+    margin-top: 6px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    transition: width 0.6s ease;
+}
+
+/* ----------------------------- */
+/*            CARDS              */
+/* ----------------------------- */
+
+.card {
+    background: var(--card-bg);
+    padding: 25px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    backdrop-filter: blur(10px);
+}
+
+/* ----------------------------- */
+/*         CONTAINER             */
+/* ----------------------------- */
+
+.container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 25px auto;
+}
+
+/* ----------------------------- */
+/*          INPUTS               */
+/* ----------------------------- */
+
+.card input,
+.card textarea,
+.card select {
+    width: 100%;
+    padding: 12px;
+    background: var(--input-bg);
+    border-radius: 10px;
+    border: none;
+    color: var(--text);
+    margin-bottom: 12px;
+}
+
+/* ----------------------------- */
+/*        TABS (ABA)             */
+/* ----------------------------- */
+
+.tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.tab {
+    padding: 8px 14px;
+    border-radius: 10px;
+    background: var(--glass-bg);
+    border: 1px solid transparent;
+    text-decoration: none;
+    color: var(--text);
+    transition: 0.2s;
+}
+
+.tab:hover {
+    border-color: var(--primary-light);
+}
+
+.tab.active {
+    background: var(--primary-light);
+    color: black;
+}
+
+/* ----------------------------- */
+/*         TASK CARDS            */
+/* ----------------------------- */
+
+.task {
+    background: var(--glass-bg);
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid var(--glass-border);
+}
+
+.task-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.task-desc {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* Dificuldades */
+.difficulty {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: #000;
+    font-weight: bold;
+    margin-top: 4px;
+    display: inline-block;
+}
+
+.difficulty.F {
+    background: #7FEDB1;
+}
+
+.difficulty.M {
+    background: #FFE38D;
+}
+
+.difficulty.D {
+    background: #FF9393;
+}
+
+/* ----------------------------- */
+/*    LIGHT/DARK MODE SWITCH     */
+/* ----------------------------- */
+
+.theme-switch {
+    padding: 7px 12px;
+    border-radius: 8px;
+    background: var(--primary-light);
+    cursor: pointer;
+    color: #fff;
+    font-size: 14px;
+    margin-left: 15px;
+}
+

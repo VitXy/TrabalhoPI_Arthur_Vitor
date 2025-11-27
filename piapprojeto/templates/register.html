@@ -1,105 +1,62 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar — Sistema</title>
-
-    <style>
-        body {
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #1a0933, #2b0f4a);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: "Poppins", sans-serif;
-            color: white;
-        }
-
-        .card {
-            width: 390px;
-            padding: 35px;
-            background: rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(12px);
-            border-radius: 18px;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
-            text-align: center;
-        }
-
-        .card h2 {
-            margin-bottom: 25px;
-            color: #e5d7ff;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0 18px 0;
-            border-radius: 10px;
-            border: none;
-            outline: none;
-            background: rgba(255,255,255,0.15);
-            color: white;
-            font-size: 15px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #7f46ff;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        button:hover {
-            background: #9d63ff;
-            transform: scale(1.02);
-        }
-
-        a {
-            color: #d8c0ff;
-            text-decoration: none;
-        }
-
-        .error {
-            background: rgba(255, 0, 0, 0.25);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-    </style>
+    <title>Criar Conta — Anti-Procrastinator</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
-<body>
-    
-    <div class="card">
-        <h2>Crie sua conta</h2>
+<body class="auth-body">
 
-        {% if error %}
-            <div class="error">{{ error }}</div>
-        {% endif %}
+<div class="auth-container">
+
+    <div class="auth-box glass">
+        
+        <h1 class="auth-title">Criar conta</h1>
+        <p class="auth-subtitle">Comece sua evolução hoje mesmo</p>
 
         <form method="POST">
             {% csrf_token %}
 
-            <input type="text" name="username" placeholder="Usuário" required>
-            <input type="email" name="email" placeholder="Email" required>
-            <input type="password" name="password1" placeholder="Senha" required>
-            <input type="password" name="password2" placeholder="Confirmar senha" required>
+            <div class="input-group">
+                <label>Usuário</label>
+                <input type="text" name="username" placeholder="Crie um nome de usuário" required>
+            </div>
 
-            <button type="submit">Registrar</button>
+            <div class="input-group">
+                <label>E-mail</label>
+                <input type="email" name="email" placeholder="seuemail@email.com" required>
+            </div>
+
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" name="password1" placeholder="Crie uma senha" required>
+            </div>
+
+            <div class="input-group">
+                <label>Confirmar senha</label>
+                <input type="password" name="password2" placeholder="Repita sua senha" required>
+            </div>
+
+            {% if error %}
+                <div class="error-box">
+                    <p>{{ error }}</p>
+                </div>
+            {% endif %}
+
+            <button class="btn primary-btn" type="submit">Criar conta</button>
         </form>
 
-        <p style="margin-top:15px;">
-            Já tem conta? <a href="/login/">Entrar</a>
+        <p class="switch-auth">
+            Já tem conta?
+            <a href="{% url 'login' %}">Entrar</a>
         </p>
+
     </div>
+
+</div>
 
 </body>
 </html>

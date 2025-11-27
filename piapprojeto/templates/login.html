@@ -1,103 +1,54 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — Sistema</title>
-
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: linear-gradient(135deg, #1a0933, #3b0a67);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: "Poppins", sans-serif;
-            color: white;
-        }
-
-        .card {
-            width: 360px;
-            padding: 35px;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-            border-radius: 18px;
-            box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
-            text-align: center;
-        }
-
-        .card h2 {
-            margin-bottom: 25px;
-            color: #d5c3ff;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0 18px 0;
-            border-radius: 10px;
-            border: none;
-            outline: none;
-            background: rgba(255,255,255,0.15);
-            color: white;
-            font-size: 15px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #7f46ff;
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        button:hover {
-            background: #9f63ff;
-            transform: scale(1.02);
-        }
-
-        a {
-            color: #caaaff;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .error {
-            background: rgba(255, 0, 0, 0.25);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-    </style>
+    <title>Entrar — Anti-Procrastinator</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 
-<body>
-    <div class="card">
-        <h2>Bem-vindo 👋</h2>
+<body class="auth-body">
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="error">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
+<div class="auth-container">
+    
+    <div class="auth-box glass">
+        
+        <h1 class="auth-title">Bem-vindo de volta</h1>
+        <p class="auth-subtitle">Entre para continuar sua jornada</p>
 
         <form method="POST">
             {% csrf_token %}
-            <input type="text" name="username" placeholder="Usuário" required>
-            <input type="password" name="password" placeholder="Senha" required>
 
-            <button type="submit">Entrar</button>
+            <div class="input-group">
+                <label>Usuário</label>
+                <input type="text" name="username" placeholder="Digite seu usuário" required>
+            </div>
+
+            <div class="input-group">
+                <label>Senha</label>
+                <input type="password" name="password" placeholder="Digite sua senha" required>
+            </div>
+
+            {% if messages %}
+                <div class="error-box">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <button class="btn primary-btn" type="submit">Entrar</button>
         </form>
 
-        <p style="margin-top:15px;">
-            Não tem conta? <a href="/register/">Registrar</a>
+        <p class="switch-auth">
+            Não tem conta?
+            <a href="{% url 'register' %}">Criar agora</a>
         </p>
+
     </div>
+
+</div>
+
 </body>
 </html>
