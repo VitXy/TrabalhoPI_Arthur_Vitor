@@ -104,12 +104,13 @@
 </div>
 
 <script>
-    // ANIMAÇÃO DA BARRA DE XP
-    const xp = {{ xp }};
-    const needed = {{ xp_needed_for_level }};
+    const xp = Number("{{ xp }}");
+    const needed = Number("{{ xp_needed_for_level }}");
+
     const percent = Math.min(100, Math.round((xp / needed) * 100));
     document.getElementById("barFill").style.width = percent + "%";
 </script>
+
 
 </body>
 </html>
