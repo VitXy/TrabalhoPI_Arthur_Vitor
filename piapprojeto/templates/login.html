@@ -1,19 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+
+<html lang="pt-BR">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
-    <title>Login - AntiProcrastinator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar — Sistema</title>
+
+```
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        background: linear-gradient(135deg, #1a0933, #3b0a67);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: "Poppins", sans-serif;
+        color: white;
+    }
+
+    .card {
+        width: 360px;
+        padding: 35px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(12px);
+        border-radius: 18px;
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+        text-align: center;
+    }
+
+    .card h2 {
+        margin-bottom: 25px;
+        color: #d5c3ff;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0 18px 0;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+        background: rgba(255,255,255,0.15);
+        color: white;
+        font-size: 15px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #7f46ff;
+        border: none;
+        border-radius: 10px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #9f63ff;
+        transform: scale(1.02);
+    }
+
+    a {
+        color: #caaaff;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .error {
+        background: rgba(255, 0, 0, 0.25);
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+    }
+</style>
+```
+
 </head>
+
 <body>
-    <h2>Login</h2>
+
+```
+<div class="card">
+    <h2>Bem-vindo 👋</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="error">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
     <form method="POST">
         {% csrf_token %}
-        <label>Usuário:</label><br>
-        <input type="text" name="username"><br>
-        <label>Senha:</label><br>
-        <input type="password" name="password"><br>
+        <input type="text" name="username" placeholder="Usuário" required>
+        <input type="password" name="password" placeholder="Senha" required>
+
         <button type="submit">Entrar</button>
     </form>
-    <p>Ainda não tem conta? <a href="{% url 'register' %}">Cadastre-se</a></p>
+
+    <p style="margin-top:15px;">
+        Não tem conta? <a href="/register/">Registrar</a>
+    </p>
+</div>
+```
+
 </body>
 </html>
