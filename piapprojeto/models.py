@@ -1,10 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-<<<<<<< HEAD
 from django.utils import timezone
 import math
-=======
->>>>>>> cbff90f (Atualizando branch vitor)
 
 class Tarefa(models.Model):
     DIFICULDADE_CHOICES = [
@@ -22,18 +19,10 @@ class Tarefa(models.Model):
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_conclusao = models.DateTimeField(null=True, blank=True)
 
-<<<<<<< HEAD
-    # SOFT DELETE
-    is_deleted = models.BooleanField(default=False)
-    deleted_at = models.DateTimeField(null=True, blank=True)
-
-=======
-
     class Meta:
         verbose_name = "Tarefa"
         verbose_name_plural = "Tarefas"
         
->>>>>>> cbff90f (Atualizando branch vitor)
     def __str__(self):
         return f"{self.titulo} ({self.get_dificuldade_display()})"
 
@@ -46,7 +35,6 @@ class PerfilUsuario(models.Model):
 
     dias_consecutivos = models.IntegerField(default=0)
     ultima_conclusao = models.DateField(null=True, blank=True)
-
 
     class Meta:
         verbose_name = "Perfil do Usuário"

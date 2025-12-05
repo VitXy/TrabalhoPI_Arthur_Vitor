@@ -1,14 +1,12 @@
 from django.shortcuts import render, redirect
-from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib import messages
+from .models import Tarefa, PerfilUsuario
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
-from .models import Tarefa, PerfilUsuario
 
-
-# ----------------- LOGIN -----------------
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -16,124 +14,116 @@ def login_view(request):
 
         user = authenticate(request, username=username, password=password)
 
-        if user:
+        if user is not None:
             login(request, user)
             return redirect('home')
         else:
             messages.error(request, "Usuário ou senha incorretos.")
+            return redirect('login')
 
-    return render(request, "login.html")
+    return render(request, 'login.html')
 
 
-# ----------------- REGISTER -----------------
 def register_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        email = request.POST['email']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
-
-        if password1 != password2:
-            return render(request, 'register.html', {'error': 'As senhas não coincidem.'})
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
         if User.objects.filter(username=username).exists():
-            return render(request, 'register.html', {'error': 'Usuário já existe.'})
+            messages.error(request, "Esse usuário já existe.")
+            return redirect('register')
 
-        user = User.objects.create_user(username=username, email=email, password=password1)
+        user = User.objects.create_user(username=username, password=password)
+
+        # cria perfil do usuário
         PerfilUsuario.objects.create(usuario=user)
 
-        return redirect('login')
+        login(request, user)
+        return redirect('home')
 
     return render(request, 'register.html')
 
 
-# ----------------- HOME / TAREFAS -----------------
 @login_required
 def home(request):
 
-    usuario = request.user
-    perfil, _ = PerfilUsuario.objects.get_or_create(usuario=usuario)
+    perfil, created = PerfilUsuario.objects.get_or_create(usuario=request.user)
 
-    tab = request.GET.get('tab', 'ativas')
+    # ======= TRATANDO POST (adicionar, concluir, excluir, restaurar) =======
+    if request.method == "POST":
 
-    if request.method == 'POST':
+        # --- ADICIONAR TAREFA ---
+        if "add" in request.POST:
+            titulo = request.POST.get("titulo")
+            descricao = request.POST.get("descricao")
+            dificuldade = request.POST.get("dificuldade")
 
-        # ----------------- ADICIONAR -----------------
-        if 'add' in request.POST:
-            titulo = request.POST['titulo']
-            descricao = request.POST.get('descricao', '')
-            dificuldade = request.POST.get('dificuldade', 'M')
+            if titulo.strip() != "":
+                Tarefa.objects.create(
+                    titulo=titulo,
+                    descricao=descricao,
+                    dificuldade=dificuldade,
+                    usuario=request.user,
+                    concluida=False,
+                )
 
-            Tarefa.objects.create(
-                usuario=usuario,
-                titulo=titulo,
-                descricao=descricao,
-                dificuldade=dificuldade
-            )
+            return redirect('home')
 
-        # ----------------- CONCLUIR -----------------
-        elif 'done' in request.POST:
-            tarefa_id = request.POST['tarefa_id']
-            tarefa = Tarefa.objects.get(id=tarefa_id)
+        tarefa_id = request.POST.get("tarefa_id")
+        tarefa = Tarefa.objects.get(id=tarefa_id, usuario=request.user)
 
+        # --- CONCLUIR ---
+        if "done" in request.POST:
             if not tarefa.concluida:
                 tarefa.concluida = True
                 tarefa.data_conclusao = timezone.now()
                 tarefa.save()
 
-                xp = perfil.XP_BY_DIFFICULTY[tarefa.dificuldade]
-                perfil.add_xp(xp)
+                # adiciona XP
+                ganho = PerfilUsuario.XP_BY_DIFFICULTY[tarefa.dificuldade]
+                perfil.add_xp(ganho)
 
-        # ----------------- SOFT DELETE -----------------
-        elif 'delete' in request.POST:
-            tarefa = Tarefa.objects.get(id=request.POST['tarefa_id'])
-            tarefa.is_deleted = True
-            tarefa.deleted_at = timezone.now()
+            return redirect('home')
+
+        # --- EXCLUIR ---
+        if "delete" in request.POST:
+            tarefa.delete()
+            return redirect('home')
+
+        # --- RESTAURAR NA LIXEIRA ---
+        if "restore" in request.POST:
+            tarefa.concluida = False
             tarefa.save()
+            return redirect('home')
 
-        # ----------------- RESTAURAR -----------------
-        elif 'restore' in request.POST:
-            tarefa = Tarefa.objects.get(id=request.POST['tarefa_id'])
-            tarefa.is_deleted = False
-            tarefa.deleted_at = None
-            tarefa.save()
+    # =======================================================
 
-    # ----------------- FILTRO DAS ABAS -----------------
-    if tab == 'ativas':
-        tarefas = Tarefa.objects.filter(
-            usuario=usuario, concluida=False, is_deleted=False
-        ).order_by('-data_criacao')
+    # Lê a aba da URL (?tab=ativas...)
+    tab = request.GET.get("tab", "ativas")
 
-    elif tab == 'concluidas':
-        tarefas = Tarefa.objects.filter(
-            usuario=usuario, concluida=True, is_deleted=False
-        ).order_by('-data_conclusao')
-
-    elif tab == 'lixeira':
-        tarefas = Tarefa.objects.filter(
-            usuario=usuario, is_deleted=True
-        ).order_by('-deleted_at')
-
+    if tab == "ativas":
+        tarefas = Tarefa.objects.filter(usuario=request.user, concluida=False)
+    elif tab == "concluidas":
+        tarefas = Tarefa.objects.filter(usuario=request.user, concluida=True)
     else:
-        tarefas = []
+        tarefas = []  # você ainda não implementou lixeira real
 
+    # XP
     xp_needed = PerfilUsuario.xp_needed_for_level(perfil.level)
     xp_to_next = xp_needed - perfil.xp
-    if xp_to_next < 0:
-        xp_to_next = 0
 
-    return render(request, "home.html", {
+    contexto = {
         "tarefas": tarefas,
-        "perfil": perfil,
         "tab": tab,
         "xp": perfil.xp,
         "level": perfil.level,
         "xp_needed_for_level": xp_needed,
         "xp_to_next": xp_to_next,
-    })
+    }
+
+    return render(request, 'home.html', contexto)
 
 
-# ----------------- LOGOUT -----------------
 def logout_view(request):
     logout(request)
     return redirect('login')
