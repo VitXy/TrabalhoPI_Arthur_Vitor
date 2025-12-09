@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 import math
+lixeira = models.BooleanField(default=False)
 
 class Tarefa(models.Model):
     DIFICULDADE_CHOICES = [
@@ -16,6 +17,9 @@ class Tarefa(models.Model):
     dificuldade = models.CharField(max_length=1, choices=DIFICULDADE_CHOICES, default='M')
 
     concluida = models.BooleanField(default=False)
+    lixeira = models.BooleanField(default=False)
+
+
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_conclusao = models.DateTimeField(null=True, blank=True)
 

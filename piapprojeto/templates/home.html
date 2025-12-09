@@ -32,27 +32,29 @@
             {% csrf_token %}
 
             <input type="text" name="titulo" placeholder="Título da tarefa" required>
+<textarea name="descricao" rows="2" placeholder="Descrição (opcional)" class="limit-box"></textarea>
 
-            <textarea name="descricao" rows="2" placeholder="Descrição (opcional)"></textarea>
+            <div class="select-container">
+    <select name="dificuldade">
+        <option value="M" >Média — 20 XP</option>
+        <option value="D">Difícil — 40 XP</option>
+        <option value="F">Fácil — 10 XP</option>
+    </select>
+</div>
 
-            <select name="dificuldade">
-                <option value="F">Fácil — 10 XP</option>
-                <option value="M" selected>Média — 20 XP</option>
-                <option value="D">Difícil — 40 XP</option>
-            </select>
 
             <button class="btn primary-btn" name="add" type="submit">Adicionar</button>
         </form>
     </div>
 
-    <!-- Abas de navegação -->
+    <!-- Abas -->
     <div class="tabs">
         <a class="tab {% if tab == 'ativas' %}active{% endif %}" href="?tab=ativas">Ativas</a>
         <a class="tab {% if tab == 'concluidas' %}active{% endif %}" href="?tab=concluidas">Concluídas</a>
         <a class="tab {% if tab == 'lixeira' %}active{% endif %}" href="?tab=lixeira">Lixeira</a>
     </div>
 
-    <!-- Lista de Tarefas -->
+    <!-- Lista de tarefas -->
     <div class="card glass">
 
         {% if tarefas %}
@@ -68,29 +70,42 @@
 
                 <div class="task-buttons">
 
-                    {% if not tarefa.concluida and not tarefa.is_deleted %}
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
-                        <button class="btn primary-btn" name="done">Concluir</button>
-                    </form>
-                    {% endif %}
+    {% if tab == 'lixeira' %}
 
-                    {% if tab == 'lixeira' %}
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
-                        <button class="btn restore-btn" name="restore">Restaurar</button>
-                    </form>
-                    {% else %}
-                    <form method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
-                        <button class="btn delete-btn" name="delete">Excluir</button>
-                    </form>
-                    {% endif %}
+        <!-- EXCLUIR DEFINITIVO -->
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
+            <button class="btn delete-btn" name="force_delete">Excluir</button>
+        </form>
 
-                </div>
+        <!-- RESTAURAR -->
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
+            <button class="btn restore-btn" name="restore">Restaurar</button>
+        </form>
+
+    {% else %}
+
+        {% if not tarefa.concluida and not tarefa.is_deleted %}
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
+            <button class="btn primary-btn" name="done">Concluir</button>
+        </form>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="tarefa_id" value="{{ tarefa.id }}">
+            <button class="btn delete-btn" name="delete">Excluir</button>
+        </form>
+
+    {% endif %}
+
+</div>
+
 
             </div>
 
@@ -110,7 +125,6 @@
     const percent = Math.min(100, Math.round((xp / needed) * 100));
     document.getElementById("barFill").style.width = percent + "%";
 </script>
-
 
 </body>
 </html>

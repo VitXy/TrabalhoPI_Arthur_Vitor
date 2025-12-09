@@ -5,6 +5,7 @@ from django.contrib import messages
 from .models import Tarefa, PerfilUsuario
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.urls import reverse
 
 
 def login_view(request):
@@ -35,7 +36,6 @@ def register_view(request):
 
         user = User.objects.create_user(username=username, password=password)
 
-        # cria perfil do usuário
         PerfilUsuario.objects.create(usuario=user)
 
         login(request, user)
@@ -49,64 +49,82 @@ def home(request):
 
     perfil, created = PerfilUsuario.objects.get_or_create(usuario=request.user)
 
-    # ======= TRATANDO POST (adicionar, concluir, excluir, restaurar) =======
     if request.method == "POST":
 
-        # --- ADICIONAR TAREFA ---
+        # ADICIONAR TAREFA
         if "add" in request.POST:
-            titulo = request.POST.get("titulo")
-            descricao = request.POST.get("descricao")
-            dificuldade = request.POST.get("dificuldade")
+            titulo = request.POST.get("titulo", "").strip()
+            descricao = request.POST.get("descricao", "")
+            dificuldade = request.POST.get("dificuldade", "M")
 
-            if titulo.strip() != "":
+            if titulo != "":
                 Tarefa.objects.create(
                     titulo=titulo,
                     descricao=descricao,
                     dificuldade=dificuldade,
                     usuario=request.user,
                     concluida=False,
+                    lixeira=False
                 )
 
-            return redirect('home')
+            return redirect(reverse('home'))
 
+        # pega tarefa_id com checagem
         tarefa_id = request.POST.get("tarefa_id")
-        tarefa = Tarefa.objects.get(id=tarefa_id, usuario=request.user)
+        if not tarefa_id:
+            return redirect(reverse('home'))
 
-        # --- CONCLUIR ---
+        try:
+            tarefa = Tarefa.objects.get(id=tarefa_id, usuario=request.user)
+        except Tarefa.DoesNotExist:
+            return redirect(reverse('home'))
+
+        # CONCLUIR
         if "done" in request.POST:
             if not tarefa.concluida:
                 tarefa.concluida = True
                 tarefa.data_conclusao = timezone.now()
                 tarefa.save()
 
-                # adiciona XP
-                ganho = PerfilUsuario.XP_BY_DIFFICULTY[tarefa.dificuldade]
+                ganho = PerfilUsuario.XP_BY_DIFFICULTY.get(tarefa.dificuldade, 0)
                 perfil.add_xp(ganho)
 
-            return redirect('home')
+            return redirect(reverse('home'))
 
-        # --- EXCLUIR ---
+        # ENVIAR PARA A LIXEIRA (soft delete)
         if "delete" in request.POST:
-            tarefa.delete()
-            return redirect('home')
-
-        # --- RESTAURAR NA LIXEIRA ---
-        if "restore" in request.POST:
+            tarefa.lixeira = True
             tarefa.concluida = False
             tarefa.save()
-            return redirect('home')
+            return redirect(reverse('home') + '?tab=lixeira')
 
-    # =======================================================
+        # EXCLUIR DEFINITIVO (força apagar)
+        if "force_delete" in request.POST:     # <-- AQUI É A ÚNICA ALTERAÇÃO
+            if tarefa.lixeira:
+                tarefa.delete()
+            return redirect(reverse('home') + '?tab=lixeira')
 
-    # Lê a aba da URL (?tab=ativas...)
+        # RESTAURAR DA LIXEIRA
+        if "restore" in request.POST:
+            tarefa.lixeira = False
+            tarefa.concluida = False
+            tarefa.save()
+            return redirect(reverse('home') + '?tab=ativas')
+
+    # ========= FILTRO DAS ABAS =========
     tab = request.GET.get("tab", "ativas")
 
     if tab == "ativas":
-        tarefas = Tarefa.objects.filter(usuario=request.user, concluida=False)
+        tarefas = Tarefa.objects.filter(usuario=request.user, concluida=False, lixeira=False)
+
     elif tab == "concluidas":
-        tarefas = Tarefa.objects.filter(usuario=request.user, concluida=True)
+        tarefas = Tarefa.objects.filter(usuario=request.user, concluida=True, lixeira=False)
+
+    elif tab == "lixeira":
+        tarefas = Tarefa.objects.filter(usuario=request.user, lixeira=True)
+
     else:
-        tarefas = []  # você ainda não implementou lixeira real
+        tarefas = []
 
     # XP
     xp_needed = PerfilUsuario.xp_needed_for_level(perfil.level)
